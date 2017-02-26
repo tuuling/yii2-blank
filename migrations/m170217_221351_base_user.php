@@ -10,7 +10,7 @@ class m170217_221351_base_user extends Migration
 	    $this->db->createCommand(<<<SQL
 CREATE TABLE "user" (
   id            SERIAL       NOT NULL,
-  username      VARCHAR(255) NOT NULL,
+  username      VARCHAR(255) NOT NULL UNIQUE,
   password      VARCHAR(60)  NOT NULL,
   authkey       VARCHAR(32)  NOT NULL,
   PRIMARY KEY (id)

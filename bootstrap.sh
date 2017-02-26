@@ -8,7 +8,8 @@ DBPASSWD=parool
 DBNAME=baas
 REMOTE_HOST=10.0.2.2
 REMOTE_NETWORK=10.0.2.0/24
-GITHUB_TOKEN='TOKEN_HERE'
+#replace with an actual valid token
+GITHUB_TOKEN='a34cb506280e7e0c9eeec3e5c6db1703688da122'
 
 
 echo -e "\n--- Set system encoding to UTF-8 ---\n"
@@ -25,7 +26,7 @@ apt-get -y install vim curl wget zip unzip build-essential software-properties-c
 
 echo -e "\n--- Add some repos to update our distro ---\n"
 add-apt-repository 'deb http://packages.dotdeb.org jessie all'
-add-apt-repository 'deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main 9.6'
+add-apt-repository 'deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main 9.6'
 
 wget --quiet -O - http://www.dotdeb.org/dotdeb.gpg | apt-key add - > /dev/null 2>&1
 
@@ -86,8 +87,8 @@ ln -fs /vagrant /var/www
 
 cat > /etc/apache2/sites-available/localhost.conf <<EOF
 <VirtualHost *:80>
-    DocumentRoot /var/www
-     <Directory /var/www>
+    DocumentRoot /var/www/web
+     <Directory /var/www/web>
         Options Indexes FollowSymLinks MultiViews
         AllowOverride All
         Order allow,deny
@@ -114,9 +115,12 @@ cd /vagrant
 sudo -u vagrant composer global require fxp/composer-asset-plugin:1.2.2
 sudo -u vagrant composer install
 
-#
-#echo -e "\n--- Add github token for composer ---\n"
-#composer config -g github-oauth.github.com $GITHUB_TOKEN
-#
-#echo -e "\n--- Updating project components and pulling latest versions ---\n"
-#cd /vagrant
+
+echo -e "\n--- Add github token for composer ---\n"
+sudo -u vagrant composer config -g github-oauth.github.com $GITHUB_TOKEN
+
+echo -e "\n--- Updating project components and pulling latest versions ---\n"
+cd /vagrant
+
+echo -e "\n--- run application migration ---\n"
+php yii migrate --interactive=0 > /dev/null 2>&1
